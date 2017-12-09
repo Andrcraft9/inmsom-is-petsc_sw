@@ -61,6 +61,6 @@ run_seq:
 
 #-ksp_type gmres
 run:
-	-@${MPIEXEC} -n 4 ./inmsom -ksp_type gmres -pc_type none -ksp_view -log_summary
+	-@${MPIEXEC} -n 4 ./inmsom -ksp_type gmres -pc_type none -ksp_view 
 
 

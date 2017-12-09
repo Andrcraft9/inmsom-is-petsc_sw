@@ -199,17 +199,24 @@
             real*8  :: frictau
             integer :: ileft, iright
             integer :: ierr
+            real*8 :: w_time
 
+            call start_timer(w_time)
             call estimate_matrix_size
+            call end_timer(w_time)
+            if (rank .eq. 0) print *, "Estimate matrix size: ", w_time
 
             preconditioner_formed = 0
             is_formed = 0
             matrice_permuted = 0
 
+            call start_timer(w_time)
             call MatCreate(PETSc_Comm_World, matrix, ierr)
             call MatSetSizes(matrix, locnozero, locnozero, nvar, nvar, ierr)
             call MatSetFromOptions(matrix, ierr)
             call MatSetup(matrix, ierr)
+            call end_timer(w_time)
+            if (rank .eq. 0) print *, "Matrix setup: ", w_time
 
             !call matgetownershiprange(matrix,istart,iend,ierr)
             !print *, rank, istart, iend
@@ -217,6 +224,7 @@
             !call petscfinalize(ierr)
             !stop
 
+            call start_timer(w_time)
             do n = ny_start, ny_end
                 do m = nx_start, nx_end
                     !----------------------------------------------------------------------
@@ -435,9 +443,14 @@
                     endif
                 enddo
             enddo
+            call end_timer(w_time)
+            if (rank .eq. 0) print *, "MatSetValues: ", w_time
 
+            call start_timer(w_time)
             call MatAssemblyBegin(matrix, mat_final_assembly, ierr)
             call MatAssemblyEnd(matrix, mat_final_assembly, ierr)
+            call end_timer(w_time)
+            if (rank .eq. 0) print *, "MatAssembly: ", w_time
 
             !call matview(matrix, petsc_viewer_stdout_world)
 
@@ -447,11 +460,14 @@
             !call petscfinalize(ierr)
             !stop
 
+            call start_timer(w_time)
             call KSPCreate(PETSc_Comm_World, ksp, ierr)
             call KSPSetOperators(ksp, matrix, matrix, ierr)
             call KSPSetFromOptions(ksp, ierr)
             call KSPSetInitialGuessNonZero(ksp, petsc_true, ierr)
             !call kspsettype(ksp, kspgmres)
+            call end_timer(w_time)
+            if (rank .eq. 0) print *, "KSP create, setting: ", w_time
 
             !print *, 'iniit ksp'
             !call kspsetup(ksp, ierr)
@@ -546,6 +562,7 @@
 
             call KSPGetIterationNumber(ksp, its, ierr)
             call KSPGetResidualNorm(ksp, norm, ierr)
+
             !call kspview(ksp,petsc_viewer_stdout_world,ierr)
 
             if (rank.eq.0) then
@@ -576,7 +593,7 @@
             enddo
             call VecRestoreArrayf90(sol, retarray, ierr)
             call end_timer(w_time)
-            if (rank.eq.0) print *, 'form u, v, ssh:', w_time
+            if (rank .eq. 0) print *, 'form u, v, ssh:', w_time
 
             !call start_timer(w_time)
             call syncborder_real8(u, 1)
