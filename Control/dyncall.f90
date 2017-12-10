@@ -16,15 +16,37 @@ subroutine shallow_water_model_step(tau)
     real*8 :: tau, diffslpr
     real*8 :: time_count
 
-    diffslpr = 1.0d+3
+    diffslpr = 1.0d0
     !diffslpr = 0.0d0
 
 !---------------------- Shallow water equ solver -------------------------------
 
     if (atm_forcing_on == 1) then
-        if (rank .eq. 0 ) print *, "ATM MOD NOT READY!"
-        call finalize_parallel(ierr)
-        call exit(0)
+        !Computation of sea surface boundary conditions
+        if(ksw_ssbc > 0) then
+            call sea_surface_fluxes
+            !call sea_surface_fluxes_simple
+        endif
+        !Computing bottom stresses
+        !if(type_fric>0) then
+        !    call sea_bottom_fluxes
+        !endif
+
+        do n=ny_start,ny_end
+            do m=nx_start,nx_end
+                if(lu(m,n)>0.5) then
+                    !RHSx2d(m, n) = ( surf_stress_x(m,n)+bot_stress_x(m,n) )*dxt(m,n)*dyh(m,n)    &
+                    !( tx_surf(m  ,n)*dy(m  ,n) + tx_surf(m+1,n)*dy(m+1,n) )/dyh(m,n)/dz(k)/2.0
+                    RHSx2d(m, n) = (surf_stress_x(m,n))    &
+                             -(slpr(m+1,n)-slpr(m,n))*hhu(m,n)/dxt(m,n)/RefDen
+
+                    !RHSy2d(m, n) = ( surf_stress_y(m,n)+bot_stress_y(m,n) )*dyt(m,n)*dxh(m,n)    &
+                    !( ty_surf(m,n  )*dx(m,n  ) + ty_surf(m,n+1)*dx(m,n+1) )/dxh(m,n)/dz(k)/2.0
+                    RHSy2d(m, n) = (surf_stress_y(m,n))    &
+                             -(slpr(m,n+1)-slpr(m,n))*hhv(m,n)/dyt(m,n)/RefDen
+                endif
+            enddo
+        enddo
     else
         wf_tot = 0.0d0
 
@@ -34,6 +56,8 @@ subroutine shallow_water_model_step(tau)
                    if(lu(m,n)>0.5) then
                        RHSx2d(m,n)= -(diffslpr)*hhu(m,n)/dxt(m,n)/RefDen
                        RHSy2d(m,n)= -(diffslpr)*hhv(m,n)/dyt(m,n)/RefDen
+                       !RHSx2d(m, n) = -(diffslpr)*hhu(m,n)*dyh(m,n)/RefDen
+                       !RHSy2d(m, n) = -(diffslpr)*hhv(m,n)*dxh(m,n)/RefDen
                    endif
               end do
        	end do
@@ -59,7 +83,7 @@ subroutine shallow_water_model_step(tau)
 
     !Updating depth functions
     if (full_free_surface>0) then
-        call hh_update(hhq, hhu, hhv, hhh, ssh, hhq_rest)
+        call hh_update(hhq, hhqp, hhu, hhup, hhv, hhvp, hhh, hhhp, ssh, hhq_rest)
     endif
 
     ! Check errors

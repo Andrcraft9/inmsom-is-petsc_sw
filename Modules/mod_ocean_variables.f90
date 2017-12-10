@@ -49,11 +49,8 @@ real(8),allocatable::   ssh(:,:),     &  !sea surface height (SSH) at current  t
                      RHSx2d(:,:),     &  !x-component of external force(barotropic)
                      RHSy2d(:,:)         !y-component of external force(barotropic)
 
-real(8), allocatable::  sshn(:,:),   &
-                        sshp(:,:),   &  !sea surface height (SSH) at previous time step [m] (external mode)
-                      ubrtrn(:,:),   &
+real(8), allocatable::  sshp(:,:),   &  !sea surface height (SSH) at previous time step [m] (external mode)
                       ubrtrp(:,:),   &  !barotropic velocity      zonal[m/s] at previous time step (external mode)
-                      vbrtrn(:,:),   &
                       vbrtrp(:,:)       !barotropic velocity meridional[m/s] at previous time step (external mode)
 
 !3d dynamics arrays

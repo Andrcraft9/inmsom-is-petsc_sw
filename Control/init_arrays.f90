@@ -85,6 +85,8 @@ subroutine mpi_array_boundary_definition
     if (num_thread .eq. 0) print *, "OMP Threads: ", count_threads
     !$omp end parallel
 
+    call mpi_barrier(cart_comm, ierr)
+    
 endsubroutine mpi_array_boundary_definition
 !-------------------------------------------------------------------------------
 
@@ -106,19 +108,15 @@ subroutine model_grid_allocate
     allocate   (lbasins(nx,ny))       !integer masks of regional basins
     allocate   (  hhh(bnd_x1:bnd_x2,bnd_y1:bnd_y2),      &  !ocean depth on luh (h-points)
                  hhhp(bnd_x1:bnd_x2,bnd_y1:bnd_y2),      &  !ocean depth on luh (h-points) at previous step
-                 hhhn(bnd_x1:bnd_x2,bnd_y1:bnd_y2),      &  !ocean depth on luh (h-points) at pre-previous step
              hhq_rest(bnd_x1:bnd_x2,bnd_y1:bnd_y2),      &  !ocean depth on lu  (t-points) at rest state
              hhu_rest(bnd_x1:bnd_x2,bnd_y1:bnd_y2),      &  !ocean depth on lu  (t-points) at rest state
              hhv_rest(bnd_x1:bnd_x2,bnd_y1:bnd_y2),      &  !ocean depth on lu  (t-points) at rest state
                   hhq(bnd_x1:bnd_x2,bnd_y1:bnd_y2),      &  !ocean depth on lu  (t-points)
                  hhqp(bnd_x1:bnd_x2,bnd_y1:bnd_y2),      &  !ocean depth on lu  (t-points) at previous step
-                 hhqn(bnd_x1:bnd_x2,bnd_y1:bnd_y2),      &  !ocean depth on lu  (t-points) at pre-previous step
                   hhu(bnd_x1:bnd_x2,bnd_y1:bnd_y2),      &  !ocean depth on lcu (u-points)
                  hhup(bnd_x1:bnd_x2,bnd_y1:bnd_y2),      &  !ocean depth on lcu (u-points) at previous step
-                 hhun(bnd_x1:bnd_x2,bnd_y1:bnd_y2),      &  !ocean depth on lcu (u-points) at pre-previous step
                   hhv(bnd_x1:bnd_x2,bnd_y1:bnd_y2),      &  !ocean depth on lcv (v-points)
                  hhvp(bnd_x1:bnd_x2,bnd_y1:bnd_y2),      &  !ocean depth on lcv (v-points) at previous step
-                 hhvn(bnd_x1:bnd_x2,bnd_y1:bnd_y2),      &  !ocean depth on lcv (v-points) at pre-previous step
                   rlh_s(bnd_x1:bnd_x2,bnd_y1:bnd_y2),    &  !coriolis-1 parameter on edge (t-centers) points
                   rlh_c(bnd_x1:bnd_x2,bnd_y1:bnd_y2),    &  !coriolis-2 parameter on edge (t-centers) points
                                      z(nz), zw(nz+1),    &  !vertical sigma-levels (t-points and w-points)
@@ -141,12 +139,12 @@ subroutine model_grid_allocate
           rotvec_coeff(bnd_x1:bnd_x2,bnd_y1:bnd_y2, 4) )
 
     lu=0.0; lu1=0.0; luu=0.0; luh=0.0; lcu=0.0; lcv=0.0; llu=0.0; llv=0.0; lbasins=0
-    hhh=0.0d0; hhhp=0.0d0; hhhn=0.0d0;
+    hhh=0.0d0; hhhp=0.0d0
     hhq_rest=0.0d0; hhu_rest=0.0d0; hhv_rest=0.0d0
 
-    hhq=0.0d0; hhqp=0.0d0; hhqn=0.0d0
-    hhu=0.0d0; hhup=0.0d0; hhun=0.0d0
-    hhv=0.0d0; hhvp=0.0d0; hhvn=0.0d0
+    hhq=0.0d0; hhqp=0.0d0
+    hhu=0.0d0; hhup=0.0d0
+    hhv=0.0d0; hhvp=0.0d0
     rlh_s=0.0d0; rlh_c=0.0d0
     z=0.0d0; zw=0.0d0; hzt=0.0d0; dz=0.0d0
     dxt=0.0d0; dyt=0.0d0; dx=0.0d0; dy=0.0d0; dxh=0.0d0; dyh=0.0d0; dxb=0.0d0; dyb=0.0d0
@@ -167,7 +165,7 @@ subroutine model_grid_deallocate
     deallocate(rotvec_coeff)
     deallocate(geo_lat_h,geo_lon_h,geo_lat_v,geo_lon_v,geo_lat_u,geo_lon_u,geo_lat_t,geo_lon_t)
     deallocate(yv,xu,yt,xt,dyb,dxb,dyh,dxh,dy,dx,dyt,dxt,dz,hzt,zw,z,rlh_c,rlh_s)
-    deallocate(hhvn,hhvp,hhv,hhun,hhup,hhu,hhqn,hhqp,hhq,hhhn,hhhp,hhh)
+    deallocate(hhvp,hhv,hhup,hhu,hhqp,hhq,hhhp,hhh)
     deallocate(hhq_rest, hhu_rest, hhv_rest)
 
     deallocate(lbasins)
@@ -191,11 +189,8 @@ subroutine ocean_variables_allocate
              RHSx2d(bnd_x1:bnd_x2,bnd_y1:bnd_y2),  &  !x-component of external force(barotropic)
              RHSy2d(bnd_x1:bnd_x2,bnd_y1:bnd_y2))     !y-component of external force(barotropic)
 
-    allocate (sshn(bnd_x1:bnd_x2,bnd_y1:bnd_y2),        &
-              sshp(bnd_x1:bnd_x2,bnd_y1:bnd_y2),        &
-              ubrtrn(bnd_x1:bnd_x2,bnd_y1:bnd_y2),      &
+    allocate (sshp(bnd_x1:bnd_x2,bnd_y1:bnd_y2),        &
               ubrtrp(bnd_x1:bnd_x2,bnd_y1:bnd_y2),      &
-              vbrtrn(bnd_x1:bnd_x2,bnd_y1:bnd_y2),      &
               vbrtrp(bnd_x1:bnd_x2,bnd_y1:bnd_y2))
 
     allocate (xxt(bnd_x1:bnd_x2,bnd_y1:bnd_y2,nz),    &  !auxiliary array 1
@@ -253,9 +248,9 @@ subroutine ocean_variables_allocate
     ubrtr = 0.0d0;  vbrtr = 0.0d0
     RHSx2d = 0.0d0; RHSy2d = 0.0d0
 
-    sshn = 0.0d0; sshp = 0.0d0
-    ubrtrn = 0.0d0; ubrtrp = 0.0d0
-    vbrtrn = 0.0d0; vbrtrp = 0.0d0
+    sshp = 0.0d0
+    ubrtrp = 0.0d0
+    vbrtrp = 0.0d0
 
     xxt=0.0d0; yyt=0.0d0
 
@@ -299,7 +294,7 @@ subroutine ocean_variables_deallocate
                divswrad,bot_stress_y,bot_stress_x,surf_stress_y,surf_stress_x,   &
                sflux_bot,sflux_surf,tflux_bot,tflux_surf)
     deallocate(xxt, yyt)
-    deallocate(vbrtrp,vbrtrn,ubrtrp,ubrtrn,sshp,sshn)
+    deallocate(vbrtrp,ubrtrp,sshp)
     deallocate(RHSy2d,RHSx2d,vbrtr,ubrtr,pgry,pgrx,ssh)
 
 endsubroutine ocean_variables_deallocate

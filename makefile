@@ -59,8 +59,8 @@ clean_:
 run_seq:
 	-@${MPIEXEC} -n 1 ./inmsom -ksp_type gmres -pc_type none
 
-#-ksp_type gmres
+#-ksp_type gmres, -ksp_view
 run:
-	-@${MPIEXEC} -n 4 ./inmsom -ksp_type gmres -pc_type none -ksp_view 
+	-@${MPIEXEC} -n 4 ./inmsom -ksp_type gmres
 
 

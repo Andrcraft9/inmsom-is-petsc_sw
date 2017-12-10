@@ -145,14 +145,14 @@ real(8) :: hx2, hy2
    call basinpar
    if (rank .eq. 0) print *, "--------------------END OF BASINPAR----------------------"
 
-   hhq_rest = 3000.0d0
-   hhu_rest = 3000.0d0
-   hhv_rest = 3000.0d0
-   if (rank .eq. 0) print *, "!!! HHQ_REST = 3000 m, topo file was ingored !!!"
-!   array4=0.0
-!   call prdstd(' ',bottom_topography_file,1,array4,lu,nx,ny,1, mmm,mm,nnn,nn,1,1,ierr)
-!   hhq_rest=dble(array4)
-!   call syncborder_real8(hhq_rest, 1)
+   !hhq_rest = 3000.0d0
+   !hhu_rest = 3000.0d0
+   !hhv_rest = 3000.0d0
+   !if (rank .eq. 0) print *, "!!! HHQ_REST = 3000 m, topo file was ingored !!!"
+   array4=0.0
+   call prdstd(' ',bottom_topography_file,1,array4,lu,nx,ny,1, mmm,mm,nnn,nn,1,1,ierr)
+   hhq_rest=dble(array4)
+   call syncborder_real8(hhq_rest, 1)
    if(periodicity_x/=0) then
        call cyclize8_x(hhq_rest,nx,ny,1,mmm,mm)
    end if
@@ -219,11 +219,11 @@ subroutine zero_sw_init
 
     ssh = 0.0
     sshp = 0.0
-    call hh_init(hhq, hhqp, hhqn,    &
-                 hhu, hhup, hhun,    &
-                 hhv, hhvp, hhvn,    &
-                 hhh, hhhp, hhhn,    &
-                 ssh, sshp, hhq_rest)
+
+    !initialize depth
+    call hh_init(hhq, hhqp, hhu, hhup,    &
+                 hhv, hhvp, hhh, hhhp,    &
+                 ssh, sshp, hhq_rest, hhu_rest, hhv_rest)
 
 end subroutine
 
@@ -292,12 +292,11 @@ subroutine sw_test2
     vbrtrp = vbrtr
     sshp = ssh
 
-!initialize depth for internal mode
-    call hh_init(hhq, hhqp, hhqn,    &
-                 hhu, hhup, hhun,    &
-                 hhv, hhvp, hhvn,    &
-                 hhh, hhhp, hhhn,    &
-                 ssh, sshp, hhq_rest)
+    !initialize depth
+    call hh_init(hhq, hhqp, hhu, hhup,    &
+                 hhv, hhvp, hhh, hhhp,    &
+                 ssh, sshp, hhq_rest, hhu_rest, hhv_rest)
+
 
 endsubroutine sw_test2
 
@@ -340,12 +339,10 @@ subroutine sw_only_inicond(flag_init, path2ocp)
     vbrtrp = vbrtr
     sshp = ssh
 
-    !initialize depth for internal mode
-    call hh_init(hhq, hhqp, hhqn,    &
-                 hhu, hhup, hhun,    &
-                 hhv, hhvp, hhvn,    &
-                 hhh, hhhp, hhhn,    &
-                 ssh, sshp, hhq_rest)
+    !initialize depth
+    call hh_init(hhq, hhqp, hhu, hhup,    &
+                 hhv, hhvp, hhh, hhhp,    &
+                 ssh, sshp, hhq_rest, hhu_rest, hhv_rest)
 
 endsubroutine sw_only_inicond
 

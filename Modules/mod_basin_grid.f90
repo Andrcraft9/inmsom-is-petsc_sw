@@ -16,19 +16,15 @@ integer, allocatable:: lbasins(:,:)       !integer mask
 
 real(8), allocatable:: hhh(:,:),      &  !ocean depth on luh (h-points)
                        hhhp(:,:),     &  !ocean depth on luh (h-points) at previous step
-                       hhhn(:,:),     &  !ocean depth on luh (h-points) at pre-previous step
                    hhq_rest(:,:),     &  !ocean depth on lu  (t-points) at rest state
                    hhu_rest(:,:),     &  !ocean depth on lu  (u-points) at rest state
                    hhv_rest(:,:),     &  !ocean depth on lu  (v-points) at rest state
                        hhq(:,:),      &  !ocean depth on lu  (t-points)
                        hhqp(:,:),     &  !ocean depth on lu  (t-points) at previous step
-                       hhqn(:,:),     &  !ocean depth on lu  (t-points) at pre-previous step
                        hhu(:,:),      &  !ocean depth on lcu (u-points)
                        hhup(:,:),     &  !ocean depth on lcu (u-points) at previous step
-                       hhun(:,:),     &  !ocean depth on lcu (u-points) at pre-previous step
                        hhv(:,:),      &  !ocean depth on lcv (v-points)
                        hhvp(:,:),     &  !ocean depth on lcv (v-points) at pre-previous step
-                       hhvn(:,:),     &  !ocean depth on lcv (v-points) at pre-previous step
                        rlh_s(:,:),    &  !main (sin) coriolis parameter on h-points
                        rlh_c(:,:),    &  !2-nd (cos) coriolis parameter on h-points
                     z(:), zw(:),      &  !vertical sigma-levels (t-points and w-points)

@@ -163,9 +163,11 @@ if (rank .eq. 0) print *, "--------------------END OF OCEAN MODEL PARAMETERS----
 !call sw_test2
 call zero_sw_init
 
-if (rank .eq. 0) print *, '=================================================================='
-if (rank .eq. 0) print *, '---------------- Implicit shallow water scheme -------------------'
-if (rank .eq. 0) print *, '=================================================================='
+if (rank .eq. 0) then
+    print *, '=================================================================='
+    print *, '---------------- Implicit shallow water scheme -------------------'
+    print *, '=================================================================='
+endif
 call init_implicit_shallow_water(time_step)
 
 

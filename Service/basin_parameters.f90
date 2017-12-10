@@ -587,59 +587,64 @@ endif
 
 !array4=sngl(dx)
 !call wdstd(' ','dx.dat',1,array4,lu1,nx,ny,1,mmm,mm,nnn,nn,1,1,ierr)
-!call ctl_file_write('dx.dat',    &     !file name
-!                    undef,    &     !value for undefined points
-!                    mm-mmm+1,       &     !x-dimension
-!                    nn-nnn+1,       &     !y-dimension
-!                    1,        &     !z-dimension
-!                    1,        &     !t-dimension
-!                    xgr_type,       &     !x-grid type (0 - linear, 1 - levels)
-!                    xt(nx_start),   &     !first x-value (if linear) or x-array (if levels)
-!                    dxst,       &     !x-step (if linear)
-!                    ygr_type,    &     !y-grid type (0 - linear, 1 - levels)
-!                    yt(ny_start),       &     !first y-value (if linear) or x-array (if levels)
-!                    dyst,       &     !y-step (if linear)
-!                    0,          &     !z-grid type (0 - linear, 1 - levels)
-!                    0.0d0,        &     !first z-value (if linear) or x-array (if levels)
-!                    1.0d0,        &     !z-step (if linear)
-!                    0,          &     !type   of calendar (0 - without leap-year, 1 - with leap-year)
-!                   2000,       &     !year   of the first field
-!                    1,          &     !month  of the first field
-!                    1,          &     !day    of the first field
-!                    0,          &     !hour   of the first field
-!                    0,          &     !minute of the first field
-!                    3600.0,     &     !time step (in seconds)
-!                    'Grid step in X-direction at T-grid, m',    &     !title of dataset
-!                    'dx'   )     !variable name
-!
+!call pwdstd(' ','dx.dat',1,array4,lu1,nx,ny,1,mmm,mm,nnn,nn,1,1,ierr)
+!if (rank .eq. 0 ) then
+!    call ctl_file_write('dx.dat',    &     !file name
+!                        undef,    &     !value for undefined points
+!                        mm-mmm+1,       &     !x-dimension
+!                        nn-nnn+1,       &     !y-dimension
+!                        1,        &     !z-dimension
+!                        1,        &     !t-dimension
+!                        xgr_type,       &     !x-grid type (0 - linear, 1 - levels)
+!                        xt(nx_start),   &     !first x-value (if linear) or x-array (if levels)
+!                        dxst,       &     !x-step (if linear)
+!                        ygr_type,    &     !y-grid type (0 - linear, 1 - levels)
+!                        yt(ny_start),       &     !first y-value (if linear) or x-array (if levels)
+!                        dyst,       &     !y-step (if linear)
+!                        0,          &     !z-grid type (0 - linear, 1 - levels)
+!                        0.0d0,        &     !first z-value (if linear) or x-array (if levels)
+!                        1.0d0,        &     !z-step (if linear)
+!                        0,          &     !type   of calendar (0 - without leap-year, 1 - with leap-year)
+!                       2000,       &     !year   of the first field
+!                        1,          &     !month  of the first field
+!                        1,          &     !day    of the first field
+!                        0,          &     !hour   of the first field
+!                        0,          &     !minute of the first field
+!                        3600.0,     &     !time step (in seconds)
+!                        'Grid step in X-direction at T-grid, m',    &     !title of dataset
+!                        'dx'   )     !variable name
+!endif
 !
 !array4=sngl(dy)
 !call wdstd(' ','dy.dat',1,array4,lu1,nx,ny,1,mmm,mm,nnn,nn,1,1,ierr)
-!call ctl_file_write('dy.dat',    &     !file name
-!                    undef,    &     !value for undefined points
-!                    mm-mmm+1,       &     !x-dimension
-!                    nn-nnn+1,       &     !y-dimension
-!                    1,        &     !z-dimension
-!                    1,        &     !t-dimension
-!                    xgr_type,       &     !x-grid type (0 - linear, 1 - levels)
-!                    xt(nx_start),   &     !first x-value (if linear) or x-array (if levels)
-!                    dxst,       &     !x-step (if linear)
-!                    ygr_type,    &     !y-grid type (0 - linear, 1 - levels)
-!                    yt(ny_start),       &     !first y-value (if linear) or x-array (if levels)
-!                    dyst,       &     !y-step (if linear)
-!                    0,          &     !z-grid type (0 - linear, 1 - levels)
-!                    0.0d0,        &     !first z-value (if linear) or x-array (if levels)
-!                    1.0d0,        &     !z-step (if linear)
-!                    0,          &     !type   of calendar (0 - without leap-year, 1 - with leap-year)
-!                    2000,       &     !year   of the first field
-!                    1,          &     !month  of the first field
-!                    1,          &     !day    of the first field
-!                    0,          &     !hour   of the first field
-!                    0,          &     !minute of the first field
-!                    3600.0,     &     !time step (in seconds)
-!                    'Grid step in Y-direction at T-grid, m',    &     !title of dataset
-!                    'dy'   )     !variable name
+!call pwdstd(' ','dy.dat',1,array4,lu1,nx,ny,1,mmm,mm,nnn,nn,1,1,ierr)
 !
+!if (rank .eq. 0) then
+!    call ctl_file_write('dy.dat',    &     !file name
+!                        undef,    &     !value for undefined points
+!                        mm-mmm+1,       &     !x-dimension
+!                        nn-nnn+1,       &     !y-dimension
+!                        1,        &     !z-dimension
+!                        1,        &     !t-dimension
+!                        xgr_type,       &     !x-grid type (0 - linear, 1 - levels)
+!                        xt(nx_start),   &     !first x-value (if linear) or x-array (if levels)
+!                        dxst,       &     !x-step (if linear)
+!                        ygr_type,    &     !y-grid type (0 - linear, 1 - levels)
+!                        yt(ny_start),       &     !first y-value (if linear) or x-array (if levels)
+!                        dyst,       &     !y-step (if linear)
+!                        0,          &     !z-grid type (0 - linear, 1 - levels)
+!                        0.0d0,        &     !first z-value (if linear) or x-array (if levels)
+!                        1.0d0,        &     !z-step (if linear)
+!                        0,          &     !type   of calendar (0 - without leap-year, 1 - with leap-year)
+!                        2000,       &     !year   of the first field
+!                        1,          &     !month  of the first field
+!                        1,          &     !day    of the first field
+!                        0,          &     !hour   of the first field
+!                        0,          &     !minute of the first field
+!                        3600.0,     &     !time step (in seconds)
+!                        'Grid step in Y-direction at T-grid, m',    &     !title of dataset
+!                        'dy'   )     !variable name
+!endif
 !array4=sngl(geo_lon_t)
 !call wdstd(' ','geolonT.dat',1,array4,lu1,nx,ny,1,mmm,mm,nnn,nn,1,1,ierr)
 !call ctl_file_write('geolonT.dat',    &     !file name

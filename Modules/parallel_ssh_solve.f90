@@ -204,7 +204,7 @@
             call start_timer(w_time)
             call estimate_matrix_size
             call end_timer(w_time)
-            if (rank .eq. 0) print *, "Estimate matrix size: ", w_time
+            if (rank .eq. 0 .and. debug .eq. 1) print *, "Estimate matrix size: ", w_time
 
             preconditioner_formed = 0
             is_formed = 0
@@ -216,7 +216,7 @@
             call MatSetFromOptions(matrix, ierr)
             call MatSetup(matrix, ierr)
             call end_timer(w_time)
-            if (rank .eq. 0) print *, "Matrix setup: ", w_time
+            if (rank .eq. 0 .and. debug .eq. 1) print *, "Matrix setup: ", w_time
 
             !call matgetownershiprange(matrix,istart,iend,ierr)
             !print *, rank, istart, iend
@@ -444,13 +444,13 @@
                 enddo
             enddo
             call end_timer(w_time)
-            if (rank .eq. 0) print *, "MatSetValues: ", w_time
+            if (rank .eq. 0 .and. debug .eq. 1) print *, "MatSetValues: ", w_time
 
             call start_timer(w_time)
             call MatAssemblyBegin(matrix, mat_final_assembly, ierr)
             call MatAssemblyEnd(matrix, mat_final_assembly, ierr)
             call end_timer(w_time)
-            if (rank .eq. 0) print *, "MatAssembly: ", w_time
+            if (rank .eq. 0 .and. debug .eq. 1) print *, "MatAssembly: ", w_time
 
             !call matview(matrix, petsc_viewer_stdout_world)
 
@@ -467,7 +467,7 @@
             call KSPSetInitialGuessNonZero(ksp, petsc_true, ierr)
             !call kspsettype(ksp, kspgmres)
             call end_timer(w_time)
-            if (rank .eq. 0) print *, "KSP create, setting: ", w_time
+            if (rank .eq. 0 .and. debug .eq. 1) print *, "KSP create, setting: ", w_time
 
             !print *, 'iniit ksp'
             !call kspsetup(ksp, ierr)
@@ -565,7 +565,7 @@
 
             !call kspview(ksp,petsc_viewer_stdout_world,ierr)
 
-            if (rank.eq.0) then
+            if (rank.eq.0 .and. debug .eq. 1) then
                 print *, rank, 'kspsolve', w_time, 'iters', its, 'norm', norm, 'nvar', nvar
             endif
             !call vecview(sol, petsc_viewer_stdout_world)
@@ -593,7 +593,7 @@
             enddo
             call VecRestoreArrayf90(sol, retarray, ierr)
             call end_timer(w_time)
-            if (rank .eq. 0) print *, 'form u, v, ssh:', w_time
+            if (rank .eq. 0 .and. debug .eq. 1) print *, 'form u, v, ssh:', w_time
 
             !call start_timer(w_time)
             call syncborder_real8(u, 1)
