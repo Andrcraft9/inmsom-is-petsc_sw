@@ -28,8 +28,6 @@ subroutine mpi_array_boundary_definition
     integer :: locn
     integer :: count_threads, num_thread
 
-    call start_parallel(ierr)
-
     period = (/1,1/)
     p_size = (/0,0/)
     ierr = 0
@@ -86,7 +84,7 @@ subroutine mpi_array_boundary_definition
     !$omp end parallel
 
     call mpi_barrier(cart_comm, ierr)
-    
+
 endsubroutine mpi_array_boundary_definition
 !-------------------------------------------------------------------------------
 

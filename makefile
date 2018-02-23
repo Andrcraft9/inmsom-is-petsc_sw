@@ -21,13 +21,11 @@ SRCSERVICE =	    \
 	Service/rw_ctl_file.f90           \
 	Service/time_tools.f90
 
-
 SRCFUNCTION =	\
 	Function/depth.f90   \
 	Function/mixing.f90  \
 	Function/vel_ssh.f90 \
 	Function/fluxes.f90
-
 
 SRCMODULES = 	\
 	Modules/mod_atm2oc_interpol.f90      \
@@ -39,28 +37,25 @@ SRCMODULES = 	\
 	Modules/mod_ocean_variables.f90      \
 	Modules/mod_rec_length.f90           \
 	Modules/mod_time_integration.f90     \
-	Modules/parallel_ssh_solve.f90  
+	Modules/parallel_ssh_solve.f90
 
 LIBS = 	\
 	$(LIBAMD)/amd.f
-
 
 #inmsom:
 #order is important
 #	$(FC) -o inmsom $(FCFLAGS) $(SRCMODULES) inmsom_head.f90  $(SRCFUNCTION) $(SRCCONTROL) $(SRCSERVICE)  \
 #	-L $(LIBMAINDIR)/$(LIBSPARSKIT) -lskit -L $(LIBMAINDIR)/$(LIBBLAS) -lblas $(LIBS)
 
-inmsom: 
-	-${FLINKER} -o inmsom $(SRCMODULES) inmsom_head.f90  $(SRCFUNCTION) $(SRCCONTROL) $(SRCSERVICE) ${PETSC_KSP_LIB} 
+inmsom:
+	-${FLINKER} -o inmsom $(SRCMODULES) inmsom_head.f90  $(SRCFUNCTION) $(SRCCONTROL) $(SRCSERVICE) ${PETSC_KSP_LIB}
 
 clean_:
 	$(RM) *.o *.mod
 
 run_seq:
-	-@${MPIEXEC} -n 1 ./inmsom -ksp_type gmres -pc_type none
+	-@${MPIEXEC} -n 1 ./inmsom ${RUN_PETSC_OPTS} ${PETSC_KSP_OPTS} ${PETSC_PC_OPTS}
 
 #-ksp_type gmres, -ksp_view
 run:
-	-@${MPIEXEC} -n 4 ./inmsom -ksp_type gmres
-
-
+	-@${MPIEXEC} -n 4 ./inmsom ${RUN_PETSC_OPTS} ${PETSC_KSP_OPTS} ${PETSC_PC_OPTS}

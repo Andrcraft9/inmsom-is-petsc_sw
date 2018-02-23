@@ -16,7 +16,10 @@ subroutine shallow_water_model_step(tau)
     real*8 :: tau, diffslpr
     real*8 :: time_count
 
-    diffslpr = 1.0d0
+    ! External forces is hardcoded. Just for testing!
+    diffslpr = 0.0d0
+    surf_stress_x = 1.0d-2
+    surf_stress_y = 0.0d0
     !diffslpr = 0.0d0
 
 !---------------------- Shallow water equ solver -------------------------------
@@ -54,8 +57,8 @@ subroutine shallow_water_model_step(tau)
         do n = ny_start, ny_end
               do m = nx_start, nx_end
                    if(lu(m,n)>0.5) then
-                       RHSx2d(m,n)= -(diffslpr)*hhu(m,n)/dxt(m,n)/RefDen
-                       RHSy2d(m,n)= -(diffslpr)*hhv(m,n)/dyt(m,n)/RefDen
+                       RHSx2d(m,n)= (surf_stress_x(m,n)) -(diffslpr)*hhu(m,n)/dxt(m,n)/RefDen
+                       RHSy2d(m,n)= (surf_stress_y(m,n)) -(diffslpr)*hhv(m,n)/dyt(m,n)/RefDen
                        !RHSx2d(m, n) = -(diffslpr)*hhu(m,n)*dyh(m,n)/RefDen
                        !RHSy2d(m, n) = -(diffslpr)*hhv(m,n)*dxh(m,n)/RefDen
                    endif

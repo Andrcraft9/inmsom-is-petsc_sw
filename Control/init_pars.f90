@@ -145,13 +145,13 @@ real(8) :: hx2, hy2
    call basinpar
    if (rank .eq. 0) print *, "--------------------END OF BASINPAR----------------------"
 
-   !hhq_rest = 3000.0d0
-   !hhu_rest = 3000.0d0
-   !hhv_rest = 3000.0d0
-   !if (rank .eq. 0) print *, "!!! HHQ_REST = 3000 m, topo file was ingored !!!"
-   array4=0.0
-   call prdstd(' ',bottom_topography_file,1,array4,lu,nx,ny,1, mmm,mm,nnn,nn,1,1,ierr)
-   hhq_rest=dble(array4)
+   hhq_rest = 3000.0d0
+   hhu_rest = 3000.0d0
+   hhv_rest = 3000.0d0
+   if (rank .eq. 0) print *, "!!! HHQ_REST = 3000 m, topo file was ingored !!!"
+   !array4=0.0
+   !call prdstd(' ',bottom_topography_file,1,array4,lu,nx,ny,1, mmm,mm,nnn,nn,1,1,ierr)
+   !hhq_rest=dble(array4)
    call syncborder_real8(hhq_rest, 1)
    if(periodicity_x/=0) then
        call cyclize8_x(hhq_rest,nx,ny,1,mmm,mm)
@@ -359,13 +359,17 @@ subroutine init_implicit_shallow_water(tau)
     integer :: ierr
     real*8 :: time_count
 
+    call init_parallel_sea_level_solver()
+
     if (rank .eq. 0) print *, "Begin Matrix Form!"
     call start_timer(time_count)
     call form_matrice_ssh(tau, r_diss)
-    !call form_precondition()
     call end_timer(time_count)
     if (rank .eq. 0) print *, "Matrix Form time is ", time_count
 
-    !call test_matrice()
+    !call finalize_parallel(ierr)
+    !call exit(0)
+
+    call init_ksp_solver()
 
 endsubroutine init_implicit_shallow_water

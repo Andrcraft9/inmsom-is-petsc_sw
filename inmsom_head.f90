@@ -10,6 +10,8 @@ character(128) fname
 integer m, ierr
 real*8 t_global, t_local
 
+call start_parallel(ierr)
+
 !call non_mpi_array_boundary_definition
 call mpi_array_boundary_definition
 
@@ -102,7 +104,7 @@ time_write_global=0
 time_step_m = time_step/60.00d0
 time_step_h = time_step/3600.00d0
 time_step_d = time_step/86400.00d0
-nstep_per_day=nint(86400.0d0/time_step)       !NUMBER OF STEP PER DAY
+nstep_per_day=nint(86400.0d0/time_step) !NUMBER OF STEP PER DAY
 
 ! for local output
 loc_data_wr_period = max(min(loc_data_wr_period,1440.0),sngl(time_step_m)) !The maximum local output period is 1 day, minimum is time step
@@ -110,10 +112,10 @@ loc_data_wr_period_step = nint(loc_data_wr_period/time_step_m)   !period in step
 loc_data_tstep = loc_data_wr_period * 60.0                      !Time step in seconds for writing local data
 
 year_loc=init_year
- mon_loc=1
- day_loc=int(loc_data_wr_period/1440.0)+1
- hour_loc=mod(int(loc_data_wr_period/60.0),24)
-  min_loc=mod(int(loc_data_wr_period),60)
+mon_loc=1
+day_loc=int(loc_data_wr_period/1440.0)+1
+hour_loc=mod(int(loc_data_wr_period/60.0),24)
+min_loc=mod(int(loc_data_wr_period),60)
 
 ! for global output
 if(abs(glob_data_wr_period)>1440.5) then
@@ -159,9 +161,9 @@ call ocean_model_parameters(time_step)
 if (rank .eq. 0) print *, "--------------------END OF OCEAN MODEL PARAMETERS----------------------"
 
 ! Initializing SW init conditions
-!call sw_only_inicond(0, path2ocp)
+call sw_only_inicond(0, path2ocp)
 !call sw_test2
-call zero_sw_init
+!call zero_sw_init
 
 if (rank .eq. 0) then
     print *, '=================================================================='
@@ -283,7 +285,7 @@ if( key_write_local>0) then
   !call parallel_point_output(path2ocp, num_step, 38.590d0, 46.700d0, 'Eesk')
 
   call start_timer(t_local)
-  call  parallel_local_output(path2ocp,  &
+  call parallel_local_output(path2ocp,  &
                      nrec_loc,  &
                      year_loc,  &
                       mon_loc,  &
