@@ -161,7 +161,7 @@ call ocean_model_parameters(time_step)
 if (rank .eq. 0) print *, "--------------------END OF OCEAN MODEL PARAMETERS----------------------"
 
 ! Initializing SW init conditions
-call sw_only_inicond(0, path2ocp)
+call sw_only_inicond(1, path2ocp)
 !call sw_test2
 !call zero_sw_init
 

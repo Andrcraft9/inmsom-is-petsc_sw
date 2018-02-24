@@ -38,6 +38,38 @@ subroutine print_basin_grid
                   print *, m, n, lcv(m, n)
               enddo
             enddo
+
+            print *, "|------------------------- LUU MASK: --------------------------|"
+            print *, "m ", "n "
+            do m=bnd_x1, bnd_x2
+              do n=bnd_y1, bnd_y2
+                  print *, m, n, luu(m, n)
+              enddo
+            enddo
+
+            print *, "|------------------------- LLU MASK: --------------------------|"
+            print *, "m ", "n "
+            do m=bnd_x1, bnd_x2
+              do n=bnd_y1, bnd_y2
+                  print *, m, n, llu(m, n)
+              enddo
+            enddo
+
+            print *, "|------------------------- LLV MASK: --------------------------|"
+            print *, "m ", "n "
+            do m=bnd_x1, bnd_x2
+              do n=bnd_y1, bnd_y2
+                  print *, m, n, llv(m, n)
+              enddo
+            enddo
+
+            print *, "|------------------------- LUH MASK: --------------------------|"
+            print *, "m ", "n "
+            do m=bnd_x1, bnd_x2
+              do n=bnd_y1, bnd_y2
+                  print *, m, n, luh(m, n)
+              enddo
+            enddo
         endif
         call mpi_barrier(cart_comm, ierr)
     enddo

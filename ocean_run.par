@@ -1,5 +1,5 @@
             0  : 0 - start from minimum conditions, 1 - start from the full checkpoint
-       300.0d0 : Model time step in seconds
+         5.0d0 : Model time step in seconds
           1.0  : Duration of the run (in days)
             0  : Time step number (0 matches to 01 January 00:00:00)
          2007  : Initial year (i4.4)

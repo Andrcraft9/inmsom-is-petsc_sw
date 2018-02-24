@@ -49,7 +49,7 @@
         integer  is_formed, matrice_permuted, preconditioner_formed
 
         integer, parameter :: do_draw = 0
-        integer, parameter :: debug = 2 ! debug = 1 - useful info about matrix,
+        integer, parameter :: debug = 1 ! debug = 1 - useful info about matrix,
                                         ! debug > 1 - useful info about solutions
 
         integer, parameter :: do_reordering_for_sparsity = 1

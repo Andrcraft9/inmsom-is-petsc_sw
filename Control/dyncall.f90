@@ -18,9 +18,8 @@ subroutine shallow_water_model_step(tau)
 
     ! External forces is hardcoded. Just for testing!
     diffslpr = 0.0d0
-    surf_stress_x = 1.0d-2
-    surf_stress_y = 0.0d0
-    !diffslpr = 0.0d0
+    surf_stress_x = 0.0d0 !1.0d-4
+    surf_stress_y = 0.0d0 !2.0d-4
 
 !---------------------- Shallow water equ solver -------------------------------
 
