@@ -48,9 +48,9 @@
 
         integer  is_formed, matrice_permuted, preconditioner_formed
 
-        integer, parameter :: debug = 1 ! debug = 1 - useful info about matrix,
-                                        ! debug = 2 - Draw Matrix
-                                        ! debug > 2 - useful info about solutions
+        integer, parameter :: do_draw = 0
+        integer, parameter :: debug = 2 ! debug = 1 - useful info about matrix,
+                                        ! debug > 1 - useful info about solutions
 
         integer, parameter :: do_reordering_for_sparsity = 1
 
@@ -78,7 +78,7 @@
 
             if (rank .eq. 0) then
                 print *, 'PARALLEL SEA LEVEL SOLVER INITIALIZATION'
-                print *, 'debug = ', debug, 'reordering = ', do_reordering_for_sparsity
+                print *, 'debug = ', debug, 'do draw = ', do_draw, 'reordering = ', do_reordering_for_sparsity
             endif
 
         end subroutine
@@ -95,16 +95,16 @@
             call KSPSetInitialGuessNonZero(ksp, petsc_true, ierr)
             !call kspsettype(ksp, kspgmres)
             call end_timer(w_time)
-            if (rank .eq. 0 .and. debug .eq. 1) print *, "KSP create, setting: ", w_time
+            if (rank .eq. 0 .and. debug .gt. 0) print *, "KSP create, setting: ", w_time
 
             call KSPGetPC(ksp, precond, ierr)
 
-            if (debug .eq. 1) then
+            if (debug .gt. 0) then
                 call PCGetType(precond, precond_type, ierr)
                 if (rank .eq. 0) print *, "PC type: ", precond_type
                 call PCView(precond, PETSC_VIEWER_STDOUT_WORLD, ierr)
             endif
-            if (debug .eq. 2) then
+            if (do_draw .eq. 1) then
                 call PCComputeExplicitOperator(precond, precond_matrix, ierr)
                 call MatView(precond_matrix, viewer, ierr)
             endif
@@ -296,7 +296,7 @@
             call start_timer(w_time)
             call estimate_matrix_size
             call end_timer(w_time)
-            if (rank .eq. 0 .and. debug .eq. 1) print *, "Estimate matrix size: ", w_time
+            if (rank .eq. 0 .and. debug .gt. 0) print *, "Estimate matrix size: ", w_time
 
             preconditioner_formed = 0
             is_formed = 0
@@ -313,9 +313,9 @@
 
             call MatGetType(matrix, mat_type, ierr)
             call end_timer(w_time)
-            if (rank .eq. 0 .and. debug .eq. 1) print *, "Mat type: ", mat_type, "Matrix setup: ", w_time
+            if (rank .eq. 0 .and. debug .gt. 0) print *, "Mat type: ", mat_type, "Matrix setup: ", w_time
 
-            if (debug .eq. 1) then
+            if (debug .gt. 0) then
                 call MatGetOwnershipRange(matrix, mIstart, mIend, ierr)
                 print *, "Matrix range: ", rank, nx_start, nx_end, ny_start, ny_end, mIstart, mIend
             endif
@@ -547,15 +547,15 @@
                 enddo
             enddo
             call end_timer(w_time)
-            if (rank .eq. 0 .and. debug .eq. 1) print *, "MatSetValues: ", w_time
+            if (rank .eq. 0 .and. debug .gt. 0) print *, "MatSetValues: ", w_time
 
             call start_timer(w_time)
             call MatAssemblyBegin(matrix, MAT_FINAL_ASSEMBLY, ierr)
             call MatAssemblyEnd(matrix, MAT_FINAL_ASSEMBLY, ierr)
             call end_timer(w_time)
-            if (rank .eq. 0 .and. debug .eq. 1) print *, "MatAssembly: ", w_time
+            if (rank .eq. 0 .and. debug .gt. 0) print *, "MatAssembly: ", w_time
 
-            if (debug .eq. 2) then
+            if (do_draw .eq. 1) then
                 !call MatView(matrix, petsc_viewer_stdout_world, ierr)
                 call MatView(matrix, viewer, ierr)
             endif
@@ -656,7 +656,7 @@
 
             !call kspview(ksp,petsc_viewer_stdout_world,ierr)
 
-            if (rank.eq.0 .and. debug .gt. 2) then
+            if (rank.eq.0 .and. debug .gt. 1) then
                 print *, rank, 'kspsolve', w_time, 'iters', its, 'norm', norm, 'nvar', nvar
             endif
             !call vecview(sol, petsc_viewer_stdout_world)
@@ -684,7 +684,7 @@
             enddo
             call VecRestoreArrayf90(sol, retarray, ierr)
             call end_timer(w_time)
-            if (rank .eq. 0 .and. debug .gt. 2) print *, 'form u, v, ssh:', w_time
+            if (rank .eq. 0 .and. debug .gt. 1) print *, 'form u, v, ssh:', w_time
 
             !call start_timer(w_time)
             call syncborder_real8(u, 1)
@@ -795,7 +795,7 @@
         call start_timer(w_time)
         call estimate_matrix_size_test_order
         call end_timer(w_time)
-        if (rank .eq. 0 .and. debug .eq. 1) print *, "Estimate matrix size: ", w_time
+        if (rank .eq. 0 .and. debug .gt. 0) print *, "Estimate matrix size: ", w_time
 
         preconditioner_formed = 0
         is_formed = 0
@@ -808,7 +808,7 @@
         call MatSetUp(matrix, ierr)
         call MatGetType(matrix, mat_type, ierr)
         call end_timer(w_time)
-        if (rank .eq. 0 .and. debug .eq. 1) print *, "Mat type: ", mat_type, "Matrix setup: ", w_time
+        if (rank .eq. 0 .and. debug .gt. 0) print *, "Mat type: ", mat_type, "Matrix setup: ", w_time
 
         call start_timer(w_time)
 
@@ -1014,15 +1014,15 @@
         enddo
 
         call end_timer(w_time)
-        if (rank .eq. 0 .and. debug .eq. 1) print *, "MatSetValues: ", w_time
+        if (rank .eq. 0 .and. debug .gt. 0) print *, "MatSetValues: ", w_time
 
         call start_timer(w_time)
         call MatAssemblyBegin(matrix, MAT_FINAL_ASSEMBLY, ierr)
         call MatAssemblyEnd(matrix, MAT_FINAL_ASSEMBLY, ierr)
         call end_timer(w_time)
-        if (rank .eq. 0 .and. debug .eq. 1) print *, "MatAssembly: ", w_time
+        if (rank .eq. 0 .and. debug .gt. 0) print *, "MatAssembly: ", w_time
 
-        if (debug .eq. 2) then
+        if (do_draw .eq. 1) then
             !call MatView(matrix, petsc_viewer_stdout_world, ierr)
             call MatView(matrix, viewer, ierr)
         endif
