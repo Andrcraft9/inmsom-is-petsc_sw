@@ -1,2 +1,3 @@
-Shallow water model, 2017.
-Parallel Implicit scheme. Using PETSc lib.
+Shallow water model, 2017. Version with implicit time scheme. 
+Parallel version.
+Using PETSc lib.
